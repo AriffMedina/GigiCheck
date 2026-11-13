@@ -56,9 +56,21 @@ export function mockProvider(): Provider {
   });
 }
 
+/**
+ * Reading a product label needs no deep reasoning, and thinking time pushes requests past the timeout.
+ * Each Gemini family exposes a different knob, so the lightest supported setting is chosen by model name.
+ */
+export function thinkingConfig(model: string): Record<string, string | number> | undefined {
+  if (model.startsWith('gemini-3')) return { thinkingLevel: 'low' };
+  if (model.startsWith('gemini-2.5-flash')) return { thinkingBudget: 0 };
+  if (model.startsWith('gemini-2.5-pro')) return { thinkingBudget: 128 };
+  return undefined;
+}
+
 export function geminiProvider(apiKey: string, model: string, fetcher: typeof fetch = fetch): Provider {
   const schema = z.toJSONSchema(resultSchema);
   delete schema.$schema;
+  const thinking = thinkingConfig(model);
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   return async (image, signal) => {
     try {
@@ -69,7 +81,10 @@ export function geminiProvider(apiKey: string, model: string, fetcher: typeof fe
           systemInstruction: { parts: [{ text: prompt }] },
           contents: [{ role: 'user', parts: [{ inlineData: { mimeType: 'image/jpeg', data: image.toString('base64') } }] }],
           // Thinking tokens count against maxOutputTokens on Gemini 2.5+; a low cap returns empty answers.
-          generationConfig: { responseMimeType: 'application/json', responseJsonSchema: schema, maxOutputTokens: 8192 },
+          generationConfig: {
+            responseMimeType: 'application/json', responseJsonSchema: schema, maxOutputTokens: 8192,
+            ...(thinking ? { thinkingConfig: thinking } : {}),
+          },
         }),
       });
       if (!response.ok) {

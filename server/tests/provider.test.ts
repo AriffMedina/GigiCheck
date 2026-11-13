@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { ApiError } from '../src/contracts.js';
-import { geminiProvider } from '../src/provider.js';
+import { geminiProvider, thinkingConfig } from '../src/provider.js';
 
 const valid = { status: 'identified', suggestion: { name: 'Producto de prueba', brand: null, presentation: null, category: null, warnings: [] } };
 const payload = (result: unknown) => ({ candidates: [{ content: { parts: [{ text: 'hidden reasoning', thought: true }, { text: JSON.stringify(result) }] } }] });
@@ -59,4 +59,12 @@ test('truncated thinking response with no answer text is rejected, and the cap l
 test('blocked response without content is rejected as invalid, not crashed', async () => {
   const provider = geminiProvider('test-only-key', 'configured-model', async () => Response.json({ candidates: [{ finishReason: 'SAFETY' }] }));
   await assert.rejects(provider(Buffer.alloc(0), new AbortController().signal), (e: unknown) => e instanceof ApiError && e.code === 'provider_invalid_response');
+});
+
+test('thinking is minimized per Gemini family so label reads stay within the timeout', () => {
+  assert.deepEqual(thinkingConfig('gemini-2.5-flash'), { thinkingBudget: 0 });
+  assert.deepEqual(thinkingConfig('gemini-2.5-flash-lite'), { thinkingBudget: 0 });
+  assert.deepEqual(thinkingConfig('gemini-2.5-pro'), { thinkingBudget: 128 });
+  assert.deepEqual(thinkingConfig('gemini-3-flash-preview'), { thinkingLevel: 'low' });
+  assert.equal(thinkingConfig('gemini-2.0-flash'), undefined);
 });

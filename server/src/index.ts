@@ -12,7 +12,7 @@ async function start() {
   const server = keyPath && certificatePath
     ? httpsServer({ key: await readFile(keyPath), cert: await readFile(certificatePath) }, handler)
     : httpServer(handler);
-  server.requestTimeout = 30_000;
+  server.requestTimeout = 45_000;
   server.headersTimeout = 10_000;
   server.keepAliveTimeout = 5_000;
   const port = z.coerce.number().int().min(1).max(65535).parse(process.env.PORT ?? '3001');

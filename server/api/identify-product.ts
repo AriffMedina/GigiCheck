@@ -26,4 +26,4 @@ export default function identify(request: IncomingMessage, response: ServerRespo
   return handler(request, response);
 }
 
-export const config = { maxDuration: 35 };
+export const config = { maxDuration: 50 };

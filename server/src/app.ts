@@ -24,7 +24,7 @@ export function createHandler(options: AppOptions) {
     let release: (() => void) | undefined;
     let requestId: string | undefined;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 30_000);
+    const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 40_000);
     const onClose = () => { if (!response.writableEnded) controller.abort(); };
     response.once('close', onClose);
     try {

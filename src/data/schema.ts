@@ -1,0 +1,7 @@
+export const migration = `
+CREATE TABLE IF NOT EXISTS sessions(id TEXT PRIMARY KEY, workDate TEXT NOT NULL, shift TEXT NOT NULL CHECK(length(shift) BETWEEN 1 AND 40), timezone TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN ('active','closed')), revision INTEGER NOT NULL DEFAULT 1, branch TEXT NOT NULL DEFAULT '', responsible TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '');
+CREATE UNIQUE INDEX IF NOT EXISTS one_active ON sessions(status) WHERE status='active';
+CREATE TABLE IF NOT EXISTS entries(id TEXT PRIMARY KEY, sessionId TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE, name TEXT NOT NULL, brand TEXT NOT NULL, presentation TEXT NOT NULL, category TEXT NOT NULL, quantity INTEGER NOT NULL CHECK(quantity BETWEEN 1 AND 999), note TEXT NOT NULL, photo TEXT, sourceDraftId TEXT UNIQUE NOT NULL, source TEXT NOT NULL, deletedAt INTEGER);
+CREATE TABLE IF NOT EXISTS drafts(id TEXT PRIMARY KEY, sessionId TEXT NOT NULL UNIQUE REFERENCES sessions(id) ON DELETE CASCADE, name TEXT NOT NULL, brand TEXT NOT NULL, presentation TEXT NOT NULL, category TEXT NOT NULL, quantityInput TEXT NOT NULL, note TEXT NOT NULL, photo TEXT, imageRevision INTEGER NOT NULL, formRevision INTEGER NOT NULL, source TEXT NOT NULL, editingEntryId TEXT);
+CREATE TABLE IF NOT EXISTS consumed_drafts(id TEXT PRIMARY KEY, sessionId TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE);
+PRAGMA user_version=1;`;

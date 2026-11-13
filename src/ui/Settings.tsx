@@ -1,0 +1,12 @@
+import { useEffect,useState } from 'react';
+import { Text,View } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { CONSENT_KEY,TOKEN_KEY,URL_KEY } from '../services/identify';
+import { Button,Field,Notice } from './controls';
+import { s } from './theme';
+export function Settings({onWipe}:{onWipe:()=>void}) {
+  const [url,setUrl]=useState('');const [token,setToken]=useState('');const [error,setError]=useState('');const [saved,setSaved]=useState(false);
+  useEffect(()=>{void SecureStore.getItemAsync(URL_KEY).then(value=>setUrl(value??'')).catch(()=>setError('No se pudo leer la configuración.'));},[]);
+  async function save(){setError('');setSaved(false);try{const parsed=new URL(url);if(parsed.protocol!=='https:')throw new Error('Usa una dirección HTTPS para proteger la fotografía y la credencial.');if(!token.trim())throw new Error('Escribe la credencial del dispositivo.');await SecureStore.setItemAsync(URL_KEY,url.trim());await SecureStore.setItemAsync(TOKEN_KEY,token.trim());setToken('');setSaved(true);}catch(e){setError(e instanceof Error?e.message:'No se pudo guardar la configuración.');}}
+  return <View style={{gap:20}}><Text style={s.title}>A tu manera.</Text><Text style={s.h2}>Identificación opcional</Text><Text style={s.muted}>La cámara, la entrada manual y el PDF funcionan sin conexión. La IA necesita un servicio configurado y tu consentimiento antes de enviar una foto.</Text><Field label="Dirección del servicio HTTPS" value={url} autoCapitalize="none" keyboardType="url" onChangeText={setUrl}/><Field label="Credencial de este dispositivo" value={token} secureTextEntry autoCapitalize="none" onChangeText={setToken}/><Button onPress={()=>void save()}>Guardar configuración IA</Button>{saved&&<Text style={s.text}>Configuración guardada.</Text>}<Notice text={error}/><Button outline onPress={()=>{void SecureStore.deleteItemAsync(CONSENT_KEY).then(()=>setSaved(false)).catch(()=>setError('No se pudo revocar el consentimiento.'));}}>Revocar consentimiento IA</Button><View style={s.line}/><Text style={s.h2}>Tus datos, en este teléfono</Text><Text style={s.muted}>GigiCheck es una herramienta personal, sin integración corporativa. No hay sincronización ni respaldo restaurable. Desinstalar la app puede eliminar tus conteos y fotos. Los archivos ya compartidos no se pueden revocar.</Text><Button outline onPress={onWipe}>Eliminar todos mis datos</Button></View>;
+}

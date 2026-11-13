@@ -1,0 +1,13 @@
+node_modules/
+.expo/
+dist/
+android/
+ios/
+.env
+.env.*
+!.env.example
+*.tgz
+coverage/
+.sites/
+.atl/
+.openai/

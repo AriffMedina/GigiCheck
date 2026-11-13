@@ -1,0 +1,6 @@
+{
+  "name": "gigicheck", "version": "0.1.0", "private": true, "main": "index.ts",
+  "scripts": {"start":"expo start", "android":"expo run:android", "ios":"expo run:ios", "typecheck":"tsc --noEmit", "test":"tsx --test tests/*.test.ts", "lint":"tsc --noEmit", "export:android":"expo export --platform android"},
+  "dependencies": {"expo":"58.0.25", "react":"19.3.0", "react-native":"0.88.1", "expo-camera":"58.0.14", "expo-crypto":"58.0.8", "expo-file-system":"58.0.13", "expo-image-manipulator":"58.0.16", "expo-print":"58.0.9", "expo-secure-store":"58.0.3", "expo-sharing":"58.0.23", "expo-sqlite":"58.0.17", "expo-status-bar":"58.0.5", "react-native-safe-area-context":"5.11.1"},
+  "devDependencies": {"@types/react":"19.2.14", "typescript":"5.9.3", "tsx":"4.21.0"}
+}

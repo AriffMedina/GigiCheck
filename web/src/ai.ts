@@ -42,6 +42,16 @@ export function parseResult(value: unknown): Result {
     throw Error("Sugerencia de IA inválida.");
   return value as unknown as Result;
 }
+// Surfaces the server's error code so a failure on the phone can be diagnosed without devtools.
+async function errorCode(response: Response): Promise<string> {
+  try {
+    const body: unknown = await response.json();
+    const code = object(body) && object(body.error) ? body.error.code : null;
+    return typeof code === "string" ? code : `HTTP ${response.status}`;
+  } catch {
+    return `HTTP ${response.status}`;
+  }
+}
 export async function identify(
   draft: Draft,
   requestId: string,
@@ -78,7 +88,7 @@ export async function identify(
           429: "Cuota de IA agotada.",
         } as Record<number, string>
       )[response.status] ??
-        "No se pudo identificar. Completa los datos.",
+        `No se pudo identificar (${await errorCode(response)}). Completa los datos.`,
     );
   const result = parseResult(await response.json());
   if (

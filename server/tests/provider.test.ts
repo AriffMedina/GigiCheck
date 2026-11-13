@@ -44,3 +44,19 @@ test('rejects oversized provider output before parsing it', async () => {
   const provider = geminiProvider('test-only-key', 'configured-model', async () => new Response('x'.repeat(70 * 1024)));
   await assert.rejects(provider(Buffer.alloc(0), new AbortController().signal), (e: unknown) => e instanceof ApiError && e.status === 502);
 });
+
+test('truncated thinking response with no answer text is rejected, and the cap leaves room for thinking', async () => {
+  let cap = 0;
+  const provider = geminiProvider('test-only-key', 'configured-model', async (_url, init) => {
+    const body: unknown = JSON.parse(String(init?.body));
+    cap = Number(Reflect.get(Reflect.get(body as object, 'generationConfig') as object, 'maxOutputTokens'));
+    return Response.json({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: 'thinking', thought: true }] } }] });
+  });
+  await assert.rejects(provider(Buffer.alloc(0), new AbortController().signal), (e: unknown) => e instanceof ApiError && e.code === 'provider_invalid_response');
+  assert.ok(cap >= 8192);
+});
+
+test('blocked response without content is rejected as invalid, not crashed', async () => {
+  const provider = geminiProvider('test-only-key', 'configured-model', async () => Response.json({ candidates: [{ finishReason: 'SAFETY' }] }));
+  await assert.rejects(provider(Buffer.alloc(0), new AbortController().signal), (e: unknown) => e instanceof ApiError && e.code === 'provider_invalid_response');
+});

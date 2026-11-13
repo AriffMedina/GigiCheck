@@ -61,6 +61,7 @@ export function mockProvider(): Provider {
  * Each Gemini family exposes a different knob, so the lightest supported setting is chosen by model name.
  */
 export function thinkingConfig(model: string): Record<string, string | number> | undefined {
+  if (model.startsWith('gemini-3') && model.includes('flash')) return { thinkingLevel: 'minimal' };
   if (model.startsWith('gemini-3')) return { thinkingLevel: 'low' };
   if (model.startsWith('gemini-2.5-flash')) return { thinkingBudget: 0 };
   if (model.startsWith('gemini-2.5-pro')) return { thinkingBudget: 128 };

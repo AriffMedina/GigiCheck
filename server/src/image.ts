@@ -16,7 +16,9 @@ export async function sanitizeImage(file: File): Promise<Buffer> {
     const expected = file.type === 'image/jpeg' ? 'jpeg' : 'png';
     if (metadata.format !== expected || (metadata.pages ?? 1) > 1) throw new ApiError(415, 'unsupported_image');
     // Re-encoding drops EXIF/location and rejects incomplete image data before sending anything.
-    return await image.autoOrient().jpeg({ quality: 85 }).toBuffer();
+    // 1024 px keeps labels legible while cutting Gemini's 768 px image tiles (and latency) by more than half.
+    return await image.autoOrient().resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 80 }).toBuffer();
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(415, 'invalid_image');

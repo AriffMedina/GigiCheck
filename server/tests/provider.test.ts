@@ -65,6 +65,7 @@ test('thinking is minimized per Gemini family so label reads stay within the tim
   assert.deepEqual(thinkingConfig('gemini-2.5-flash'), { thinkingBudget: 0 });
   assert.deepEqual(thinkingConfig('gemini-2.5-flash-lite'), { thinkingBudget: 0 });
   assert.deepEqual(thinkingConfig('gemini-2.5-pro'), { thinkingBudget: 128 });
-  assert.deepEqual(thinkingConfig('gemini-3-flash-preview'), { thinkingLevel: 'low' });
+  assert.deepEqual(thinkingConfig('gemini-3-flash-preview'), { thinkingLevel: 'minimal' });
+  assert.deepEqual(thinkingConfig('gemini-3-pro-preview'), { thinkingLevel: 'low' });
   assert.equal(thinkingConfig('gemini-2.0-flash'), undefined);
 });

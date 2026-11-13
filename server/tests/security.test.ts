@@ -31,6 +31,14 @@ test('re-encodes a valid image and removes EXIF before external processing', asy
   assert.equal((await sharp(result).metadata()).exif, undefined);
 });
 
+test('downscales phone photos to 1024 px for faster identification without enlarging small ones', async () => {
+  const photo = await sharp({ create: { width: 1600, height: 1200, channels: 3, background: '#ffffff' } }).jpeg().toBuffer();
+  const resized = await sharp(await sanitizeImage(new File([new Uint8Array(photo)], 'p.jpg', { type: 'image/jpeg' }))).metadata();
+  assert.deepEqual([resized.width, resized.height], [1024, 768]);
+  const small = await sharp({ create: { width: 400, height: 300, channels: 3, background: '#ffffff' } }).jpeg().toBuffer();
+  assert.equal((await sharp(await sanitizeImage(new File([new Uint8Array(small)], 's.jpg', { type: 'image/jpeg' }))).metadata()).width, 400);
+});
+
 test('rejects mismatched MIME and oversized dimensions', async () => {
   const jpeg = await sharp({ create: { width: 4, height: 6, channels: 3, background: '#ffffff' } }).jpeg().toBuffer();
   await assert.rejects(sanitizeImage(new File([new Uint8Array(jpeg)], 'test.png', { type: 'image/png' })), (e: unknown) => e instanceof ApiError && e.status === 415);

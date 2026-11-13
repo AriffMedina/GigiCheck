@@ -31,7 +31,7 @@ export function useIdentification(
     const timeout = setTimeout(() => {
       timedOut = true;
       abort.abort();
-    }, 30000);
+    }, 45000);
     try {
       const { suggestion } = await identify(before, id(), abort.signal);
       // Stale-response guard: ignore results for another draft or photo.

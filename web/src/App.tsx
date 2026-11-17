@@ -1,3 +1,4 @@
+import { Backdrop } from "./Backdrop";
 import { CountView } from "./CountView";
 import { Editor } from "./Editor";
 import { FinishView } from "./FinishView";
@@ -48,6 +49,7 @@ export default function App() {
   else content = <Home onStart={app.start} />;
   return (
     <div className="app">
+      <Backdrop />
       <header className="topbar">
         <div className="wordmark">
           Gigi<span>Check</span>

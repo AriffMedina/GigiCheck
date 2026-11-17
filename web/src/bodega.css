@@ -45,3 +45,4 @@
 .nav button.active{background:#362942;color:var(--soft)}
 .nav button.active:after{display:none}
 @media(max-width:350px){.warehouse-progress{grid-template-columns:minmax(0,1fr) 76px}.warehouse-controls{gap:6px;grid-template-columns:48px minmax(44px,1fr) 70px 48px}.warehouse-summary{font-size:13px}.warehouse-hero h1{font-size:40px}}
+.backdrop{z-index:0}.topbar,.content{position:relative;z-index:1}

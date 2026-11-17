@@ -89,7 +89,7 @@ test("marcar todas o reiniciar resuelve ajustes rápidos contra la última canti
   assert.equal((await repo.entries(session))[0]?.brought, 0);
 });
 
-test("Conteo elige el activo o la bodega más reciente del mismo día", async () => {
+test("Inicio elige únicamente el conteo activo; los finalizados se abren desde historial", async () => {
   const first = await repo.createSession();
   const old = (await repo.sessions())[0]!;
   await repo.changeStatus(old, "closed");
@@ -99,11 +99,30 @@ test("Conteo elige el activo o la bodega más reciente del mismo día", async ()
   const latest = (await repo.sessions())[0]!;
   await repo.changeStatus(latest, "closed");
   await resetConnection();
-  assert.equal(currentCount(await repo.sessions())?.id, second);
+  assert.equal(currentCount(await repo.sessions()), null);
   assert.notEqual(first, second);
   assert.equal(currentCount([]), null);
   assert.equal(currentCount([
     { id: "closed", status: "closed" } as Session,
     { id: "active", status: "active" } as Session,
   ])?.id, "active");
+});
+
+test("cancelar y volver desde historial no restaura una bodega anterior, tampoco al recargar", async () => {
+  const previous = await repo.createSession();
+  await add(previous, "producto-anterior", 2);
+  await repo.changeStatus((await repo.sessions())[0]!, "closed");
+  const active = await repo.createSession();
+  await add(active, "producto-cancelado");
+  await repo.saveDraft({ ...blankDraft(active), name: "Borrador cancelado" });
+  await repo.deleteSession(active);
+  assert.equal(currentCount(await repo.sessions()), null);
+  assert.equal((await repo.sessions()).length, 1);
+  assert.equal((await repo.entries(previous))[0]?.quantity, 2);
+  assert.equal((await repo.entries(active)).length, 0);
+  assert.equal(await repo.getDraft(active), null);
+  await resetConnection();
+  assert.equal(currentCount(await repo.sessions()), null);
+  const next = await repo.createSession();
+  assert.equal(currentCount(await repo.sessions())?.id, next);
 });

@@ -79,8 +79,9 @@ export const dateLabel = (session: Session, full = false) =>
   `${Number(session.date.slice(8))} ${MONTHS[Number(session.date.slice(5, 7)) - 1]} · ${full ? session.shift : session.shift.split(" (")[0]}`;
 export const pending = (row: Entry) => row.quantity - row.brought;
 export type BringChange = number | "all" | "none";
+// History entries must only reopen explicitly, especially after canceling a new count.
 export const currentCount = (sessions: Session[]): Session | null =>
-  sessions.find((session) => session.status === "active") ?? sessions[0] ?? null;
+  sessions.find((session) => session.status === "active") ?? null;
 // Steps the quantity text by delta, always landing in 1..999 (also from empty or invalid text).
 export function stepQuantity(text: string, delta: number): string {
   const current = /^\d+$/.test(text) ? Number(text) : 0;

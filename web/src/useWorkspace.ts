@@ -1,4 +1,4 @@
-import { blankDraft, type Entry } from "./domain";
+import { blankDraft, currentCount, type BringChange, type Entry } from "./domain";
 import * as repo from "./repository";
 import { useWorkspaceData, type Page } from "./useWorkspaceData";
 export type { Page } from "./useWorkspaceData";
@@ -26,7 +26,7 @@ export function useWorkspace() {
     setPage(next);
     window.scrollTo(0, 0);
   };
-  // Closed counts open on the finish screen (PDF + warehouse checklist).
+  // Closed counts open in bodega while their original product list stays unchanged.
   const open = (sessionId: string) => {
     void action(async () => {
       const list = await refresh(sessionId);
@@ -35,7 +35,12 @@ export function useWorkspace() {
     });
   };
   const start = () => {
-    void action(async () => open(await repo.createSession()));
+    void action(async () => {
+      const list = await repo.sessions();
+      const active = list.find((item) => item.status === "active");
+      await refresh(active?.id ?? await repo.createSession());
+      show("count");
+    });
   };
   async function editingDraft(entry: Entry) {
     const next = {
@@ -103,9 +108,8 @@ export function useWorkspace() {
     }
     setError("");
     if (next === "count")
-      // The count tab always shows the active count (or the start button), never a closed one.
       void action(async () => {
-        await refresh(all.find((item) => item.status === "active")?.id ?? "");
+        await refresh(currentCount(await repo.sessions())?.id ?? "");
         show("count");
       });
     else show(next);
@@ -137,9 +141,9 @@ export function useWorkspace() {
       show("finish");
     });
   }
-  const bring = (entry: Entry, add: number) => {
+  const bring = (entry: Entry, change: BringChange) => {
     void action(async () => {
-      await repo.bring(entry.id, add);
+      await repo.bring(entry.id, change);
       await refresh();
     });
   };

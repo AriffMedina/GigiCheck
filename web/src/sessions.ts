@@ -5,7 +5,8 @@ import { cleanPhotos } from "./drafts";
 
 export async function sessions() {
   return (await (await db()).getAll("sessions")).sort(
-    (a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id),
+    (a, b) => b.date.localeCompare(a.date) ||
+      (b.createdAt ?? 0) - (a.createdAt ?? 0) || b.id.localeCompare(a.id),
   );
 }
 export async function createSession() {
@@ -20,6 +21,7 @@ export async function createSession() {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     status: "active",
     revision: 1,
+    createdAt: Date.now(),
   };
   await tx.store.add(session);
   await tx.done;

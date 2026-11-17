@@ -3,6 +3,7 @@ import { Editor } from "./Editor";
 import { FinishView } from "./FinishView";
 import { History } from "./History";
 import { Home } from "./Home";
+import { Snoopy } from "./Snoopy";
 import { ErrorNotice, Icon } from "./ui";
 import { useWorkspace } from "./useWorkspace";
 
@@ -24,13 +25,13 @@ export default function App() {
         onOpen={app.openExisting}
       />
     );
-  else if (page === "finish" && session)
+  else if (session?.status === "closed")
     content = (
       <FinishView
         session={session}
         rows={rows}
         onBring={app.bring}
-        onBack={() => app.navigate("count")}
+        onBack={app.start}
       />
     );
   else if (session?.status === "active")
@@ -51,6 +52,7 @@ export default function App() {
         <div className="wordmark">
           Gigi<span>Check</span>
         </div>
+        <Snoopy className="brand-snoopy" />
       </header>
       <main className="content">
         {!app.online && (
@@ -64,14 +66,14 @@ export default function App() {
       {page !== "editor" && (
         <nav className="nav" aria-label="Navegación principal">
           <button
-            className={page === "count" ? "active" : ""}
+            className={page === "count" || page === "finish" ? "active" : ""}
             onClick={() => app.navigate("count")}
           >
             <Icon name="home" />
             Conteo
           </button>
           <button
-            className={page === "history" || page === "finish" ? "active" : ""}
+            className={page === "history" ? "active" : ""}
             onClick={() => app.navigate("history")}
           >
             <Icon name="history" />

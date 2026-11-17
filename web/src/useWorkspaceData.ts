@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { blankDraft, type Draft, type Entry, type Session } from "./domain";
+import { currentCount, type Draft, type Entry, type Session } from "./domain";
 import * as repo from "./repository";
 export type Page = "count" | "history" | "editor" | "finish";
 export function useWorkspaceData() {
@@ -18,7 +18,7 @@ export function useWorkspaceData() {
     const next =
       preferred ??
       selected ??
-      list.find((item) => item.status === "active")?.id ??
+      currentCount(list)?.id ??
       null;
     setAll(list);
     setSelected(next);

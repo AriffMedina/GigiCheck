@@ -11,10 +11,13 @@ export interface Session {
   timezone: string;
   status: "active" | "closed";
   revision: number;
+  createdAt?: number;
 }
 export interface Entry extends Identity {
   id: string;
   sessionId: string;
+  // Older records retain their existing order ahead of newly confirmed products.
+  position?: number;
   quantity: number;
   // Units already brought down from the warehouse (0..quantity).
   brought: number;
@@ -75,6 +78,9 @@ const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "
 export const dateLabel = (session: Session, full = false) =>
   `${Number(session.date.slice(8))} ${MONTHS[Number(session.date.slice(5, 7)) - 1]} · ${full ? session.shift : session.shift.split(" (")[0]}`;
 export const pending = (row: Entry) => row.quantity - row.brought;
+export type BringChange = number | "all" | "none";
+export const currentCount = (sessions: Session[]): Session | null =>
+  sessions.find((session) => session.status === "active") ?? sessions[0] ?? null;
 // Steps the quantity text by delta, always landing in 1..999 (also from empty or invalid text).
 export function stepQuantity(text: string, delta: number): string {
   const current = /^\d+$/.test(text) ? Number(text) : 0;

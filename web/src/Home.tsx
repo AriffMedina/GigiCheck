@@ -7,7 +7,7 @@ export const Home = ({ onStart }: { onStart: () => void }) => (
   <section className="grid min-h-[68dvh] place-items-center">
     <Empty className="relative gap-8 border-0">
       <EmptyHeader className="gap-3">
-        <EmptyTitle className="font-serif text-5xl font-bold tracking-tight">Buenos días cielo,</EmptyTitle>
+        <EmptyTitle className="font-serif text-5xl font-bold tracking-tight">Buenos días cielo</EmptyTitle>
         <EmptyDescription className="text-base">¿Iniciamos el conteo? {"<3"}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>

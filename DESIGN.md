@@ -26,7 +26,7 @@ Texto principal sobre acción primaria supera 4.5:1. Usar texto oscuro sobre lav
 
 ## Typography
 
-- Serif expresiva solo en el saludo de conteo y título del PDF, como en la referencia; preferir Georgia disponible o una serif distribuida con licencia verificada.
+- Serif expresiva solo en el saludo de conteo, como en la referencia; preferir Georgia disponible o una serif distribuida con licencia verificada. El PDF utiliza sans legible para productos y cantidades.
 - Sans del sistema para navegación, formularios, botones, listas y cifras. Mantener una sola familia funcional.
 - Título editorial 2.5–2.75 rem; encabezados funcionales 1.375–1.5 rem; texto y botones 1–1.125 rem; metadatos 0.875–1 rem. Cantidad central 3.5–4 rem.
 - Respetar escalado de texto y permitir saltos sin cortar etiquetas ni acciones.
@@ -35,11 +35,12 @@ Texto principal sobre acción primaria supera 4.5:1. Usar texto oscuro sobre lav
 
 - Márgenes laterales de 20–24 píxeles CSS y escala de espaciado de 4, 8, 12, 16, 24 y 32 píxeles CSS.
 - Conteo: marca discreta, saludo serif, fecha y turno, resumen de productos/unidades, lista con separadores finos y acciones al pie.
+- Al finalizar: «En bodega» ocupa Conteo; progreso semicircular por unidades, filas en orden de registro, botones −/+1 y check «Todo» por producto. Marcar completa sus unidades; desmarcar las reinicia a cero. El botón − permite corregir una unidad sin reiniciar todo.
 - Fila de producto: miniatura cuadrada de 56–64 píxeles CSS con radio 12, nombre y presentación, cantidad alineada al extremo. Evitar tarjetas anidadas.
 - Botón primario violeta sólido de al menos 52 píxeles CSS de alto y radio 12. Secundario con contorno lavanda de 1 píxel CSS. Iconos del mismo estilo de trazo.
 - Captura: usar el selector de cámara/foto del iPhone y una revisión visible antes de guardar. La entrada manual debe estar siempre disponible. Mostrar permisos/errores y cancelar sin perder el borrador.
 - Revisión: foto pequeña, sugerencia de IA identificada cuando exista, campos editables, cantidad manual con botones menos/más y confirmación final.
-- PDF: hoja clara, tipografía oscura, encabezado editorial, tabla legible, separadores violetas y total. El color nunca es necesario para comprenderlo impreso.
+- Compartir aparece después de la lista, sin preview. PDF: hoja blanca con Snoopy vectorial morado, acentos lavanda, producto, foto disponible y faltantes del conteo original (`quantity`), sin restar las unidades bajadas de bodega. Sin metadatos visibles, notas, resumen ni progreso; encabezado compacto repetido, fotos centradas y cantidades destacadas. El color nunca es necesario para comprenderlo impreso.
 - Navegación inferior con Conteo e Historial; selección lavanda y etiqueta visible. Evitar información importante bajo zonas seguras.
 - Usar `viewport-fit=cover`, zonas seguras con `env(safe-area-inset-*)` y altura dinámica del viewport. Los formularios deben seguir accesibles con el teclado abierto y al ampliar texto.
 - La instalación en iPhone se explica como Safari → Compartir → Agregar a inicio → Abrir como app web. No depender de una invitación automática de instalación.
@@ -51,7 +52,7 @@ El conteo vacío explica cómo agregar el primer producto. Guardado, carga, erro
 
 ## Illustration
 
-La referencia contiene un personaje ilustrado reconocible. Conservar la imagen como guía visual; no extraer ni distribuir ese personaje como asset de la app sin confirmar los derechos de uso. Usar decoración propia discreta si se necesita ilustración.
+Por petición explícita de la usuaria, Snoopy aparece delineado en morado: discreto en la marca compartida y acompañando el progreso de bodega. El dibujo se representa con trazos vectoriales locales, sin depender de imágenes externas. Conservar las referencias originales intactas.
 
 ## Verification
 

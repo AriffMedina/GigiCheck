@@ -1,127 +1,43 @@
 import { jsPDF } from "jspdf";
-import { dateLabel, OPERATOR, totals, type Entry, type Session } from "./domain";
+import { type Entry, type Session } from "./domain";
 import { db } from "./db";
 import { compressImage, dataUrl } from "./photos";
+import { PAGE, reportHeader, text, wrap } from "./pdf-layout";
 
 export const reportName = (session: Session) => `faltantes_${session.date}.pdf`;
 
 export function makePdf(
-  session: Session,
   rows: Entry[],
   images: Record<string, string> = {},
-  generated = new Date().toLocaleString("es-MX"),
 ): Blob {
-  if (!rows.length)
-    throw Error("Agrega al menos un producto antes de exportar.");
+  if (!rows.length) throw Error("Agrega al menos un producto antes de exportar.");
   const doc = new jsPDF({ unit: "mm", format: "letter" });
-  const width = 215.9;
-  const bottom = 252;
-  let y = 0;
-  const wrap = (
-    text: string,
-    size: number,
-    maxWidth: number,
-    bold = false,
-  ): string[] => {
-    doc.setFont("helvetica", bold ? "bold" : "normal");
-    doc.setFontSize(size);
-    return doc.splitTextToSize(text, maxWidth) as string[];
-  };
-  const header = () => {
-    doc.setTextColor(27, 19, 36);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("GigiCheck", 16, 16);
-    doc.setFont("times", "bold");
-    doc.setFontSize(25);
-    doc.text("Conteo de faltantes", 16, 29);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(
-      // Standard PDF fonts lack the en dash of the shift label.
-      `${dateLabel(session, true).replace("–", "-")}${session.status === "active" ? " · En curso" : ""}`,
-      16,
-      37,
-    );
-    doc.text(OPERATOR, 16, 43);
-    const top = 47;
-    doc.setFillColor(229, 217, 246);
-    doc.rect(16, top, width - 32, 9, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Producto", 19, top + 6);
-    doc.text("Cantidad", width - 19, top + 6, { align: "right" });
-    y = top + 10;
-  };
-  header();
+  let y = reportHeader(doc);
   for (const row of rows) {
     const image = images[row.id];
-    const name = wrap(row.name, 11, image ? 127 : 145, true);
-    const details = wrap(
-      [row.brand, row.presentation || "Sin especificar"]
-        .filter(Boolean)
-        .join(" · "),
-      9,
-      image ? 127 : 145,
-    );
-    const note = row.note ? wrap(row.note, 9, 145) : [];
-    const height = Math.max(
-      image ? 24 : 0,
-      10 + name.length * 5 + details.length * 4 + note.length * 4,
-    );
-    if (y + height > bottom) {
+    const name = wrap(doc, row.name, 118, 11, true);
+    const details = wrap(doc, [row.brand, row.presentation].filter(Boolean).join(" · "), 118, 9.5);
+    const height = Math.max(26, 14 + name.length * 5 + details.length * 4.1);
+    if (y + height > PAGE.bottom) {
       doc.addPage();
-      header();
+      y = reportHeader(doc);
     }
-    const x = image ? 42 : 19;
     if (image) {
-      // Fit inside 19x19 mm keeping the photo's proportions.
-      const { width: w, height: h } = doc.getImageProperties(image);
-      const scale = 19 / Math.max(w, h);
-      doc.addImage(image, "JPEG", 19, y + 3, w * scale, h * scale, undefined, "FAST");
+      doc.setFillColor("#F7F2FB");
+      doc.roundedRect(16, y + 2, 22, 22, 3, 3, "F");
+      const { width, height: imageHeight } = doc.getImageProperties(image);
+      const scale = 20 / Math.max(width, imageHeight);
+      const w = width * scale, h = imageHeight * scale;
+      doc.addImage(image, "JPEG", 17 + (20 - w) / 2, y + 3 + (20 - h) / 2, w, h, undefined, "FAST");
     }
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text(name, x, y + 6);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(details, x, y + 6 + name.length * 5);
-    if (note.length)
-      doc.text(note, 19, y + 8 + name.length * 5 + details.length * 4);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text(String(row.quantity), width - 19, y + 7, { align: "right" });
+    text(doc, name, 45, y + 10, 11, true);
+    if (details.length) text(doc, details, 45, y + 10 + name.length * 5, 9.5, false, "#756881");
+    doc.setFillColor("#F2E9F9");
+    doc.roundedRect(174, y + 4, 26, 16, 5, 5, "F");
+    text(doc, String(row.quantity), 187, y + 15, 20, true, "#68408B", "center");
     y += height;
-    doc.setDrawColor(198, 180, 215);
-    doc.line(16, y, width - 16, y);
-  }
-  if (y + 18 > bottom) {
-    doc.addPage();
-    header();
-  }
-  const sum = totals(rows);
-  doc.setFillColor(229, 217, 246);
-  doc.rect(16, y + 5, width - 32, 12, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.text(
-    `${sum.products} productos registrados · ${sum.units} unidades faltantes`,
-    19,
-    y + 13,
-  );
-  const count = doc.getNumberOfPages();
-  for (let page = 1; page <= count; page++) {
-    doc.setPage(page);
-    doc.setTextColor(80, 70, 90);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text(`Generado: ${generated}`, 16, 264);
-    doc.text(
-      "Conteo manual de faltantes; identificación revisada por la usuaria.",
-      16,
-      269,
-    );
-    doc.text(`${page} / ${count}`, width - 16, 269, { align: "right" });
+    doc.setDrawColor("#E3D8EC");
+    doc.line(16, y, 199.9, y);
   }
   return doc.output("blob");
 }
@@ -129,26 +45,18 @@ export function makePdf(
 export async function createPdf(
   session: Session,
   rows: Entry[],
-  photos: boolean,
   // Injectable so tests can run without a DOM canvas.
-  compress: (blob: Blob) => Promise<Blob> = (blob) =>
-    compressImage(blob, 320, 0.65),
+  compress: (blob: Blob) => Promise<Blob> = (blob) => compressImage(blob, 320, 0.65),
 ) {
   const snapshot = rows.map((row) => ({ ...row }));
   const images: Record<string, string> = {};
-  if (photos) {
-    const database = await db();
-    for (const row of snapshot) {
-      if (!row.photo) continue;
-      const image = await database.get("photos", row.photo);
-      if (image) images[row.id] = await dataUrl(await compress(image.blob));
-    }
+  const database = await db();
+  for (const row of snapshot) {
+    if (!row.photo) continue;
+    const image = await database.get("photos", row.photo);
+    if (image) images[row.id] = await dataUrl(await compress(image.blob));
   }
-  return new File(
-    [makePdf({ ...session }, snapshot, images)],
-    reportName(session),
-    { type: "application/pdf" },
-  );
+  return new File([makePdf(snapshot, images)], reportName(session), { type: "application/pdf" });
 }
 
 export function download(file: File) {

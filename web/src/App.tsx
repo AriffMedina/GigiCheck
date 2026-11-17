@@ -3,7 +3,7 @@ import { Editor } from "./Editor";
 import { FinishView } from "./FinishView";
 import { History } from "./History";
 import { Home } from "./Home";
-import { Snoopy } from "./Snoopy";
+import { Lily } from "./Lily";
 import { ErrorNotice, Icon } from "./ui";
 import { useWorkspace } from "./useWorkspace";
 
@@ -52,7 +52,7 @@ export default function App() {
         <div className="wordmark">
           Gigi<span>Check</span>
         </div>
-        <Snoopy className="brand-snoopy" />
+        <Lily className="brand-lily" />
       </header>
       <main className="content">
         {!app.online && (

@@ -36,7 +36,6 @@ export function ExportView({ session, rows }: { session: Session; rows: Entry[] 
         <Icon name="share" />
         {file ? "Compartir conteo" : "Preparando PDF…"}
       </Button>
-      <p className="export-caption">Tu lista, lista para compartir en PDF.</p>
     </section>
   );
 }

@@ -3,6 +3,7 @@ import { stepQuantity } from "./domain";
 import { Button, ErrorNotice, Icon, Photo } from "./ui";
 import { useEditor, type EditorProps } from "./useEditor";
 import { EditorDialogs } from "./EditorDialogs";
+import SpinnerEllipsis from "@/components/premium/spinner-05/spinner-05";
 
 const ROWS = [
   ["name", "Nombre"],
@@ -53,8 +54,8 @@ export function Editor(props: EditorProps) {
           <h3>
             <span className="soft">✦</span> Sugerencia de IA
           </h3>
-          <p className="muted">
-            {analyzing ? "Identificando…" : "Revisa antes de agregar"}
+          <p className="muted flex items-center gap-2">
+            {analyzing ? <>Identificando <SpinnerEllipsis /></> : "Revisa antes de agregar"}
           </p>
         </div>
         <button
@@ -103,7 +104,6 @@ export function Editor(props: EditorProps) {
             +
           </button>
         </div>
-        <p className="muted">Cantidad escrita por ti</p>
       </div>
       <ErrorNotice message={state.error} />
       <Button disabled={busy} onClick={state.commit}>

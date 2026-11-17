@@ -41,7 +41,6 @@ export function Checklist({ rows, onBring }: {
 }) {
   return (
     <section className="warehouse-list" aria-label="Productos para bajar de bodega">
-      <div className="warehouse-list-label"><h2>Tu lista</h2><span>{rows.length} productos</span></div>
       <ul className="checklist warehouse-checklist">
         {rows.map((row) => <Item key={row.id} row={row} onBring={(add) => onBring(row, add)} />)}
       </ul>

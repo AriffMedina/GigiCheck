@@ -1,26 +1,18 @@
 /* Warehouse controls share the existing ink and lavender palette. */
 .snoopy{display:block;color:var(--soft);flex:none}
-.brand-snoopy{width:38px;height:44px;--mascot-paper:var(--bg)}
-.topbar:has(.brand-snoopy){padding-top:17px;padding-bottom:8px}
+.lily{display:block;color:var(--soft);flex:none}.brand-lily{width:38px;height:46px}.count-lily{position:absolute;right:0;top:0;width:66px;height:86px;opacity:.8}.hero:has(.count-lily){padding-right:76px;min-height:110px}.hero:has(.count-lily) h1{font-size:44px}
+.topbar:has(.brand-lily){padding-top:17px;padding-bottom:8px}
 .warehouse-hero{display:flex;flex-direction:column;gap:10px}
 .warehouse-date{font-size:14px;color:var(--muted)}
 .warehouse-hero h1{font-size:44px;line-height:1.08;letter-spacing:-1.2px}
-.warehouse-progress{display:grid;grid-template-columns:minmax(0,1fr) 96px;align-items:end;gap:5px;margin-top:1px}
-.warehouse-gauge{position:relative;min-width:0;aspect-ratio:220/124}
-.warehouse-gauge svg{display:block;width:100%;height:100%;overflow:visible}
+.warehouse-progress{display:grid;grid-template-columns:minmax(0,1fr) 96px;align-items:end;gap:12px;margin-top:1px}
 .gauge-track,.gauge-fill{fill:none;stroke-width:18;stroke-linecap:round}
 .gauge-track{stroke:#362a45}
 .gauge-fill{stroke:var(--soft)}
-.warehouse-gauge>div{position:absolute;inset:42% 0 0;display:flex;align-items:center;flex-direction:column;justify-content:center}
-.warehouse-gauge strong{font-size:40px;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1.2px}
-.warehouse-gauge span{color:var(--soft);font-size:15px;margin-top:5px}
 .warehouse-snoopy{width:100%;max-height:139px;--mascot-paper:var(--bg)}
 .warehouse-summary{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:7px;font-size:14px;color:var(--muted);padding-top:8px}
 .warehouse-summary strong{font-weight:600;color:var(--soft)}
 .warehouse-list{border-top:1px solid var(--line)}
-.warehouse-list-label{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:16px 0 0}
-.warehouse-list-label h2{font-size:17px;font-weight:600;letter-spacing:0}
-.warehouse-list-label>span{font-size:12px;color:var(--muted)}
 .checklist .warehouse-item{padding:17px 0 15px;gap:12px}
 .warehouse-product{display:flex;align-items:center;gap:12px}
 .warehouse-product .photo{width:58px;height:64px;border-radius:10px}
@@ -45,14 +37,11 @@
 .warehouse-all input:checked:after{content:"";width:6px;height:12px;border:solid #21122f;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
 .is-complete .warehouse-status{color:var(--soft)}
 .is-complete .warehouse-all{color:var(--soft)}
-.warehouse-saved{justify-content:center;margin-top:-3px}
 .warehouse-export{display:flex;flex-direction:column;gap:13px}
-.warehouse-export .check-label{font-size:13px;color:var(--muted)}
 .warehouse-export .button{border-color:#b799d5;min-height:52px}
-.export-caption{text-align:center;font-size:12px;color:var(--muted)}
 .warehouse-new{font-size:13px;align-self:center;margin-top:-12px}
 .nav{bottom:calc(12px + env(safe-area-inset-bottom));width:min(calc(100% - 32px),448px);border:1px solid #56446377;border-radius:25px;background:#211a2c;padding:4px;box-shadow:0 5px 24px #0004}
 .nav button{min-height:48px;border-radius:21px}
 .nav button.active{background:#362942;color:var(--soft)}
 .nav button.active:after{display:none}
-@media(max-width:350px){.warehouse-progress{grid-template-columns:minmax(0,1fr) 76px}.warehouse-gauge strong{font-size:34px}.warehouse-gauge span{font-size:13px}.warehouse-controls{gap:6px;grid-template-columns:48px minmax(44px,1fr) 70px 48px}.warehouse-summary{font-size:13px}.warehouse-hero h1{font-size:40px}}
+@media(max-width:350px){.warehouse-progress{grid-template-columns:minmax(0,1fr) 76px}.warehouse-controls{gap:6px;grid-template-columns:48px minmax(44px,1fr) 70px 48px}.warehouse-summary{font-size:13px}.warehouse-hero h1{font-size:40px}}

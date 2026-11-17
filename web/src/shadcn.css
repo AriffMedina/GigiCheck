@@ -1,0 +1,25 @@
+/* No preflight: the app's own CSS (styles.css, bodega.css) stays the base layer. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "tw-animate-css";
+
+/* shadcn tokens mapped onto GigiCheck's ink and lavender palette. */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #160e22;
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: #2a2236;
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--soft);
+  --color-border: var(--line);
+  --color-ring: var(--soft);
+  --color-destructive: var(--error);
+  --radius-lg: 13px;
+  --radius-xl: 18px;
+}

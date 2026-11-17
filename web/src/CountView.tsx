@@ -1,5 +1,6 @@
 import { dateLabel, totals, type Entry, type Session } from "./domain";
 import { Button, Icon, Photo } from "./ui";
+import { Lily } from "./Lily";
 
 export function CountView({
   session,
@@ -20,17 +21,8 @@ export function CountView({
   return (
     <>
       <div className="hero">
-        <h1>
-          Todo en
-          <br />
-          orden.
-        </h1>
-        <span className="spark">
-          <Icon name="spark" size={32} />
-        </span>
-        <span className="spark small">
-          <Icon name="spark" size={18} />
-        </span>
+        <h1>Mi conteo.</h1>
+        <Lily className="count-lily" />
         <p className="date">{dateLabel(session)}</p>
       </div>
       <div className="totals">
@@ -38,7 +30,6 @@ export function CountView({
         <span>{sum.units} unidades</span>
       </div>
       <hr className="rule" />
-      <h2>Mi conteo</h2>
       <div>
         {!rows.length ? (
           <p className="muted empty">Agrega tu primer producto.</p>
@@ -60,10 +51,6 @@ export function CountView({
           ))
         )}
       </div>
-      <p className="saved">
-        <span className="status-dot" />
-        Guardado en tu teléfono
-      </p>
       <div className="actions">
         <Button onClick={onAdd}>
           <Icon name="camera" />

@@ -18,8 +18,8 @@ export const Home = ({ onStart }: { onStart: () => void }) => (
     {LILIES.map((position) => <Lily key={position} className={`pointer-events-none absolute text-accent ${position}`} />)}
     <Empty className="relative gap-8 border-0">
       <EmptyHeader className="gap-3">
-        <EmptyTitle className="font-serif text-5xl font-bold tracking-tight">Nuevo conteo</EmptyTitle>
-        <EmptyDescription className="text-base">Fotografía tus productos y lleva la cuenta de la bodega.</EmptyDescription>
+        <EmptyTitle className="font-serif text-5xl font-bold tracking-tight">Buenos días cielo,</EmptyTitle>
+        <EmptyDescription className="text-base">¿Iniciamos el conteo? {"<3"}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
         <Button onClick={onStart} className="h-14 w-full max-w-xs rounded-full text-lg! font-bold! shadow-[0_8px_32px_color-mix(in_oklab,var(--accent)_35%,transparent)]">

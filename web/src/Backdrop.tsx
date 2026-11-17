@@ -9,8 +9,9 @@ const LILIES = [
   "-right-8 bottom-16 h-44 w-36 -rotate-[8deg] opacity-25",
 ];
 
-export const Backdrop = () => (
-  <div aria-hidden="true" className="backdrop pointer-events-none fixed inset-y-0 left-1/2 w-full max-w-[480px] -translate-x-1/2 overflow-hidden">
+// Dimmed on working screens so lists and photos stay the focus; full strength only on the welcome screen.
+export const Backdrop = ({ dim }: { dim: boolean }) => (
+  <div aria-hidden="true" className={`backdrop ${dim ? "opacity-35" : ""} transition-opacity duration-500 pointer-events-none fixed inset-y-0 left-1/2 w-full max-w-[480px] -translate-x-1/2 overflow-hidden`}>
     <div className="absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_42%,color-mix(in_oklab,var(--accent)_20%,transparent),transparent)]" />
     {LILIES.map((position) => <Lily key={position} className={`absolute text-accent ${position}`} />)}
   </div>

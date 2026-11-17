@@ -46,10 +46,11 @@ export default function App() {
         onCancel={app.deleteCount}
       />
     );
-  else content = <Home onStart={app.start} />;
+  const home = !content;
+  if (home) content = <Home onStart={app.start} />;
   return (
     <div className="app">
-      <Backdrop />
+      <Backdrop dim={!home} />
       <header className="topbar">
         <div className="wordmark">
           Gigi<span>Check</span>

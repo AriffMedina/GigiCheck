@@ -84,6 +84,8 @@ export function geminiProvider(apiKey: string, model: string, fetcher: typeof fe
           // Thinking tokens count against maxOutputTokens on Gemini 2.5+; a low cap returns empty answers.
           generationConfig: {
             responseMimeType: 'application/json', responseJsonSchema: schema, maxOutputTokens: 8192,
+            // Medium resolution halves image tokens versus the default and still reads a 1024 px label.
+            mediaResolution: 'MEDIA_RESOLUTION_MEDIUM',
             ...(thinking ? { thinkingConfig: thinking } : {}),
           },
         }),

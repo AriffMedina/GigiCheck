@@ -69,3 +69,13 @@ test('thinking is minimized per Gemini family so label reads stay within the tim
   assert.deepEqual(thinkingConfig('gemini-3-pro-preview'), { thinkingLevel: 'low' });
   assert.equal(thinkingConfig('gemini-2.0-flash'), undefined);
 });
+
+test('asks Gemini for medium image resolution to cut image tokens and latency', async () => {
+  let resolution: unknown;
+  const provider = geminiProvider('test-only-key', 'configured-model', async (_url, init) => {
+    resolution = Reflect.get(Reflect.get(JSON.parse(String(init?.body)) as object, 'generationConfig') as object, 'mediaResolution');
+    return Response.json({ candidates: [{ finishReason: 'SAFETY' }] });
+  });
+  await assert.rejects(provider(Buffer.alloc(0), new AbortController().signal));
+  assert.equal(resolution, 'MEDIA_RESOLUTION_MEDIUM');
+});

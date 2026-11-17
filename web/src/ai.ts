@@ -1,5 +1,6 @@
 import { db } from "./db";
 import type { Draft } from "./domain";
+import { compressImage } from "./photos";
 export interface Suggestion {
   name: string | null;
   brand: string | null;
@@ -68,7 +69,8 @@ export async function identify(
     : null;
   if (!photo) throw Error("Agrega una fotografía antes de identificar.");
   const form = new FormData();
-  form.append("image", photo.blob, "product.jpg");
+  // The server reads labels at 1024 px, so sending the 1600 px original only adds upload time on mobile data.
+  form.append("image", await compressImage(photo.blob, 1024, 0.8), "product.jpg");
   form.append("requestId", requestId);
   form.append("draftId", draft.id);
   form.append("imageRevision", String(draft.imageRevision));

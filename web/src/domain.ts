@@ -85,6 +85,10 @@ export type BringChange = number | "all" | "none";
 // History entries must only reopen explicitly, especially after canceling a new count.
 export const currentCount = (sessions: Session[]): Session | null =>
   sessions.find((session) => session.status === "active") ?? null;
+// The Conteo tab returns to the count on screen (e.g. a finished one in bodega) when none is active.
+// A canceled count leaves nothing selected, so it still falls back to Home.
+export const countTab = (sessions: Session[], selected: string | null): Session | null =>
+  currentCount(sessions) ?? sessions.find((session) => session.id === selected) ?? null;
 // Steps the quantity text by delta, always landing in 1..999 (also from empty or invalid text).
 export function stepQuantity(text: string, delta: number): string {
   const current = /^\d+$/.test(text) ? Number(text) : 0;

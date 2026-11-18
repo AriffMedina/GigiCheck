@@ -1,7 +1,7 @@
 import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
-import { blankDraft, currentCount, type Session } from "../src/domain";
+import { blankDraft, countTab, currentCount, type Session } from "../src/domain";
 import { db, resetConnection } from "../src/db";
 import * as repo from "../src/repository";
 
@@ -125,4 +125,14 @@ test("cancelar y volver desde historial no restaura una bodega anterior, tampoco
   assert.equal(currentCount(await repo.sessions()), null);
   const next = await repo.createSession();
   assert.equal(currentCount(await repo.sessions())?.id, next);
+});
+
+test("la pestaña Conteo vuelve a la bodega finalizada en pantalla, no al inicio", async () => {
+  const finished = await repo.createSession();
+  await add(finished, "producto-en-bodega");
+  await repo.changeStatus((await repo.sessions()).find((s) => s.id === finished)!, "closed");
+  assert.equal(countTab(await repo.sessions(), finished)?.id, finished);
+  assert.equal(countTab(await repo.sessions(), null), null, "tras cancelar no hay nada seleccionado");
+  const active = await repo.createSession();
+  assert.equal(countTab(await repo.sessions(), finished)?.id, active, "el conteo activo tiene prioridad");
 });

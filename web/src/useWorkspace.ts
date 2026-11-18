@@ -1,4 +1,4 @@
-import { blankDraft, currentCount, type BringChange, type Entry } from "./domain";
+import { blankDraft, countTab, type BringChange, type Entry } from "./domain";
 import * as repo from "./repository";
 import { useWorkspaceData, type Page } from "./useWorkspaceData";
 export type { Page } from "./useWorkspaceData";
@@ -6,6 +6,7 @@ export function useWorkspace() {
   const data = useWorkspaceData();
   const {
     all,
+    selected,
     setSelected,
     rows,
     draft,
@@ -109,7 +110,7 @@ export function useWorkspace() {
     setError("");
     if (next === "count")
       void action(async () => {
-        await refresh(currentCount(await repo.sessions())?.id ?? "");
+        await refresh(countTab(await repo.sessions(), selected)?.id ?? "");
         show("count");
       });
     else show(next);

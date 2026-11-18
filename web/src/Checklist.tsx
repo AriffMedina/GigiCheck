@@ -1,5 +1,6 @@
-import { pending, type BringChange, type Entry } from "./domain";
-import { Photo } from "./ui";
+import { useState } from "react";
+import { byName, pending, type BringChange, type Entry } from "./domain";
+import { Photo, SearchField } from "./ui";
 
 function Item({ row, onBring }: { row: Entry; onBring: (change: BringChange) => void }) {
   const left = pending(row);
@@ -39,10 +40,14 @@ export function Checklist({ rows, onBring }: {
   rows: Entry[];
   onBring: (row: Entry, change: BringChange) => void;
 }) {
+  const [query, setQuery] = useState("");
+  const shown = byName(rows, query);
   return (
     <section className="warehouse-list" aria-label="Productos para bajar de bodega">
+      {rows.length > 1 && <SearchField value={query} onChange={setQuery} />}
+      {!shown.length && <p className="muted empty">Ningún producto coincide.</p>}
       <ul className="checklist warehouse-checklist">
-        {rows.map((row) => <Item key={row.id} row={row} onBring={(add) => onBring(row, add)} />)}
+        {shown.map((row) => <Item key={row.id} row={row} onBring={(add) => onBring(row, add)} />)}
       </ul>
     </section>
   );

@@ -75,6 +75,16 @@ export function Photo({ id, large = false }: { id: string | null; large?: boolea
     </div>
   );
 }
+export const SearchField = ({ value, onChange }: { value: string; onChange: (value: string) => void }) => (
+  <input
+    type="search"
+    className="search"
+    placeholder="Buscar producto"
+    aria-label="Buscar producto por nombre"
+    value={value}
+    onChange={(event) => onChange(event.target.value)}
+  />
+);
 export const ErrorNotice = ({ message }: { message: string }) =>
   message ? (
     <p className="error" role="alert">

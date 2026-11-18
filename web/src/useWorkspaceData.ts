@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { currentCount, type Draft, type Entry, type Session } from "./domain";
+import { countTab, type Draft, type Entry, type Session } from "./domain";
 import * as repo from "./repository";
+import { lastCount, rememberCount } from "./lastCount";
 export type Page = "count" | "history" | "editor" | "finish";
 export function useWorkspaceData() {
   const [all, setAll] = useState<Session[]>([]);
@@ -18,8 +19,9 @@ export function useWorkspaceData() {
     const next =
       preferred ??
       selected ??
-      currentCount(list)?.id ??
+      countTab(list, lastCount())?.id ??
       null;
+    rememberCount(next);
     setAll(list);
     setSelected(next);
     if (next) {

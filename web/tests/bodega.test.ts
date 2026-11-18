@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { blankDraft, countTab, currentCount, type Session } from "../src/domain";
 import { db, resetConnection } from "../src/db";
 import * as repo from "../src/repository";
+import { lastCount, rememberCount } from "../src/lastCount";
 
 beforeEach(async () => {
   const tx = (await db()).transaction(
@@ -135,4 +136,20 @@ test("la pestaña Conteo vuelve a la bodega finalizada en pantalla, no al inicio
   assert.equal(countTab(await repo.sessions(), null), null, "tras cancelar no hay nada seleccionado");
   const active = await repo.createSession();
   assert.equal(countTab(await repo.sessions(), finished)?.id, active, "el conteo activo tiene prioridad");
+});
+
+test("al recargar en bodega reabre el conteo recordado; uno cancelado ya no existe y va al inicio", async () => {
+  const store = new Map<string, string>();
+  globalThis.localStorage = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, value),
+  } as Storage; // Minimal stub: the node test runner has no DOM storage.
+  const finished = await repo.createSession();
+  await repo.changeStatus((await repo.sessions())[0]!, "closed");
+  rememberCount(finished);
+  assert.equal(countTab(await repo.sessions(), lastCount())?.id, finished);
+  await repo.deleteSession(finished);
+  assert.equal(countTab(await repo.sessions(), lastCount()), null);
+  rememberCount(null);
+  assert.equal(lastCount(), null);
 });

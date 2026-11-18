@@ -38,7 +38,7 @@ export interface Draft extends Identity {
   source: "manual" | "ai_assisted";
   editingEntryId: string | null;
 }
-export const OPERATOR = "Regina Sanchez";
+export const OPERATOR = "Regina Sánchez";
 export const SHIFT = "Vespertino (9:00 p.m. – 6:00 a.m.)";
 export const id = () => crypto.randomUUID();
 export const normalized = (text: string) =>

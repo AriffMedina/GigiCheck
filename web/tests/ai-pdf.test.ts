@@ -77,7 +77,7 @@ test("PDF pagina nombres y presentaciones extensas sin perder productos", async 
   const pages = text.match(/\/Type \/Page\b/g)?.length ?? 0;
   assert(pages > 1);
   assert.equal(text.match(/\(FALTANTES\) Tj/g)?.length, pages);
-  assert.equal(text.match(/\(Regina Sanchez . A\.I\.M\.G\) Tj/g)?.length, pages, "la firma va en cada hoja");
+  assert.equal(text.match(/\(Regina S.nchez . A\.I\.M\.G\) Tj/g)?.length, pages, "la firma va en cada hoja");
   for (let index = 0; index < rows.length; index++) assert(text.includes(`Producto ${index} `));
   assert(!text.includes("Nota privada"));
 });

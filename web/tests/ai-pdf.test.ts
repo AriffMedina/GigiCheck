@@ -46,7 +46,7 @@ test("PDF solo muestra identificación del producto y faltantes originales", asy
   for (const label of ["PRODUCTO", "FALTANTES", "Producto 1", "Marca", "625 ml sabor coco", "(6) Tj"])
     assert(text.includes(label));
   for (const omitted of ["GigiCheck", "En bodega", "SOLICITADAS", "BAJADAS", "PENDIENTES", "Completo",
-    "Regina Sanchez", "Vespertino", "Generado", "13 nov", "productos registrados", "Nota privada", "(2) Tj", "(4) Tj"])
+    "Vespertino", "Generado", "13 nov", "productos registrados", "Nota privada", "(2) Tj", "(4) Tj"])
     assert(!text.includes(omitted), `no debe incluir ${omitted}`);
 });
 test("el avance de bodega no cambia el contenido del PDF para el personal de arriba", async () => {
@@ -77,6 +77,7 @@ test("PDF pagina nombres y presentaciones extensas sin perder productos", async 
   const pages = text.match(/\/Type \/Page\b/g)?.length ?? 0;
   assert(pages > 1);
   assert.equal(text.match(/\(FALTANTES\) Tj/g)?.length, pages);
+  assert.equal(text.match(/\(Regina Sanchez . A\.I\.M\.G\) Tj/g)?.length, pages, "la firma va en cada hoja");
   for (let index = 0; index < rows.length; index++) assert(text.includes(`Producto ${index} `));
   assert(!text.includes("Nota privada"));
 });

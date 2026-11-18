@@ -48,6 +48,9 @@ export const normalized = (text: string) =>
     .toLowerCase()
     .trim()
     .replace(/\s+/g, " ");
+// Accent- and case-insensitive so "jabon" finds "Jabón".
+export const byName = <T extends { name: string }>(rows: T[], query: string) =>
+  rows.filter((row) => normalized(row.name).includes(normalized(query)));
 export const sameIdentity = (a: Identity, b: Identity) =>
   ["name", "brand", "presentation"].every(
     (key) =>

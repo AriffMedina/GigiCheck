@@ -1,5 +1,6 @@
-import { dateLabel, totals, type Entry, type Session } from "./domain";
-import { Button, Icon, Photo } from "./ui";
+import { useState } from "react";
+import { byName, dateLabel, totals, type Entry, type Session } from "./domain";
+import { Button, Icon, Photo, SearchField } from "./ui";
 import { Lily } from "./Lily";
 
 export function CountView({
@@ -18,6 +19,8 @@ export function CountView({
   onCancel: () => void;
 }) {
   const sum = totals(rows);
+  const [query, setQuery] = useState("");
+  const shown = byName(rows, query);
   return (
     <>
       <div className="hero">
@@ -30,11 +33,14 @@ export function CountView({
         <span>{sum.units} unidades</span>
       </div>
       <hr className="rule" />
+      {rows.length > 1 && <SearchField value={query} onChange={setQuery} />}
       <div>
         {!rows.length ? (
           <p className="muted empty">Agrega tu primer producto.</p>
+        ) : !shown.length ? (
+          <p className="muted empty">Ningún producto coincide.</p>
         ) : (
-          rows.map((row) => (
+          shown.map((row) => (
             <button
               className="entry"
               key={row.id}

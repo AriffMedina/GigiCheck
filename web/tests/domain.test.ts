@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   blankDraft,
+  byName,
   dateLabel,
   pending,
   quantity,
@@ -64,4 +65,10 @@ test("etiqueta de fecha corta y pendientes por producto", () => {
   assert.equal(dateLabel(session), "3 nov · Vespertino");
   assert.equal(dateLabel(session, true), `3 nov · ${SHIFT}`);
   assert.equal(pending({ quantity: 5, brought: 2 } as Entry), 3);
+});
+test("buscar por nombre ignora acentos, mayúsculas y espacios", () => {
+  const rows = [{ name: "Jabón Zote" }, { name: "Leche Lala" }, { name: "Jabon líquido" }];
+  assert.deepEqual(byName(rows, "  JABON ").map((row) => row.name), ["Jabón Zote", "Jabon líquido"]);
+  assert.equal(byName(rows, "").length, 3);
+  assert.equal(byName(rows, "arroz").length, 0);
 });

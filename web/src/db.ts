@@ -6,12 +6,15 @@ import {
   type StoreNames,
 } from "idb";
 import type { Draft, Entry, Session } from "./domain";
+import type { Audit, AuditItem } from "./inventory";
 export interface Data extends DBSchema {
   sessions: { key: string; value: Session };
   entries: { key: string; value: Entry; indexes: { sessionId: string } };
   drafts: { key: string; value: Draft; indexes: { sessionId: string } };
   photos: { key: string; value: { id: string; blob: Blob } };
   consumed: { key: string; value: { id: string; sessionId: string } };
+  audits: { key: string; value: Audit };
+  auditItems: { key: string; value: AuditItem; indexes: { auditId: string } };
 }
 // v1 -> v2: entries gain `brought`; the settings store (consent/AI config) is gone.
 async function migrateV2(
@@ -24,9 +27,15 @@ async function migrateV2(
 }
 let opening: Promise<IDBPDatabase<Data>> | undefined;
 export function db() {
-  opening ??= openDB<Data>("gigicheck", 2, {
+  opening ??= openDB<Data>("gigicheck", 3, {
     async upgrade(db, oldVersion, _new, tx) {
-      if (oldVersion >= 1) return migrateV2(db, tx);
+      // v2 -> v3 only adds the inventory stores; existing counts are untouched.
+      if (oldVersion < 3) {
+        db.createObjectStore("audits", { keyPath: "id" });
+        db.createObjectStore("auditItems", { keyPath: "id" }).createIndex("auditId", "auditId");
+      }
+      if (oldVersion === 1) return migrateV2(db, tx);
+      if (oldVersion >= 1) return;
       db.createObjectStore("sessions", { keyPath: "id" });
       db.createObjectStore("entries", { keyPath: "id" }).createIndex(
         "sessionId",

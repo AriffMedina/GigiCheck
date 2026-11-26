@@ -3,6 +3,7 @@ import { CountView } from "./CountView";
 import { Editor } from "./Editor";
 import { FinishView } from "./FinishView";
 import { History } from "./History";
+import { InventoryView } from "./InventoryView";
 import { Home } from "./Home";
 import { Lily } from "./Lily";
 import { ErrorNotice, Icon } from "./ui";
@@ -13,6 +14,7 @@ export default function App() {
   const { session, draft, rows, page } = app;
   let content;
   if (app.loading) content = <p className="muted">Abriendo tus conteos…</p>;
+  else if (page === "inventory") content = <InventoryView />;
   else if (page === "history")
     content = <History sessions={app.all} onOpen={app.open} />;
   else if (page === "editor" && draft)
@@ -74,6 +76,13 @@ export default function App() {
           >
             <Icon name="home" />
             Conteo
+          </button>
+          <button
+            className={page === "inventory" ? "active" : ""}
+            onClick={() => app.navigate("inventory")}
+          >
+            <Icon name="box" />
+            Inventario
           </button>
           <button
             className={page === "history" ? "active" : ""}

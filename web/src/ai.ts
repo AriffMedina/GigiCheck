@@ -54,7 +54,7 @@ async function errorCode(response: Response): Promise<string> {
   }
 }
 export async function identify(
-  draft: Draft,
+  draft: Pick<Draft, "id" | "photo" | "imageRevision">,
   requestId: string,
   signal: AbortSignal,
 ) {

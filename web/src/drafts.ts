@@ -41,7 +41,7 @@ export async function discardDraft(draft: Draft) {
 }
 export async function cleanPhotos() {
   const tx = (await db()).transaction(
-    ["entries", "drafts", "photos"],
+    ["entries", "drafts", "photos", "auditItems"],
     "readwrite",
   );
   observeTransaction(tx);
@@ -52,6 +52,8 @@ export async function cleanPhotos() {
     [
       ...(await tx.objectStore("entries").getAll()),
       ...(await tx.objectStore("drafts").getAll()),
+      // Inventory items keep their photos too; without this they would be wiped as orphans.
+      ...(await tx.objectStore("auditItems").getAll()),
     ].flatMap((row) => (row.photo ? [row.photo] : [])),
   );
   for (const key of await tx.objectStore("photos").getAllKeys())

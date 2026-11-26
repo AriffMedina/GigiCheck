@@ -13,6 +13,7 @@ export interface AuditItem {
   position: number;
   name: string;
   presentation: string;
+  photo: string | null;
   // What the pharmacy system says should be on hand.
   expected: number;
   // Everything physically found (display + warehouse), spoiled units included.
@@ -39,6 +40,7 @@ export const auditTotals = (items: AuditItem[]) => ({
   missing: items.reduce((sum, item) => sum + missing(item), 0),
 });
 export interface LogRow { audit: Audit; item: AuditItem }
+export interface LogDay { date: string; audit: Audit; merma: LogRow[]; missing: LogRow[] }
 // The log is derived from inventory items, so it can never drift from what was counted.
 export function shrinkLog(audits: Audit[], items: AuditItem[]): LogRow[] {
   const byId = new Map(audits.map((audit) => [audit.id, audit]));
@@ -49,4 +51,15 @@ export function shrinkLog(audits: Audit[], items: AuditItem[]): LogRow[] {
       return audit ? [{ audit, item }] : [];
     })
     .sort((a, b) => b.audit.createdAt - a.audit.createdAt || a.item.position - b.item.position);
+}
+// Groups the log by inventory day so each day reads on its own instead of one ever-growing list.
+export function logDays(audits: Audit[], items: AuditItem[]): LogDay[] {
+  const days = new Map<string, LogDay>();
+  for (const row of shrinkLog(audits, items)) {
+    const day = days.get(row.audit.date) ?? { date: row.audit.date, audit: row.audit, merma: [], missing: [] };
+    if (row.item.merma) day.merma.push(row);
+    if (missing(row.item)) day.missing.push(row);
+    days.set(row.audit.date, day);
+  }
+  return [...days.values()];
 }

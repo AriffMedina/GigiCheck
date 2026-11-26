@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Audit, AuditItem } from "./inventory";
 import * as inv from "./inventory-repo";
 
-export function useInventory() {
+export function useInventory(initialId: string | null) {
   const [audits, setAudits] = useState<Audit[]>([]);
   const [items, setItems] = useState<AuditItem[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export function useInventory() {
     }
   }
   useEffect(() => {
-    void run(() => load());
+    void run(() => load(initialId ?? undefined));
   }, []);
   const audit = audits.find((item) => item.id === openId) ?? null;
   return {

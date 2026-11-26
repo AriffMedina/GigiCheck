@@ -2,11 +2,11 @@ import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import { db } from "../src/db";
-import { auditTotals, missing, shrinkLog, surplus, validateItem, type Audit, type AuditItem } from "../src/inventory";
+import { auditTotals, logDays, missing, shrinkLog, surplus, validateItem, type Audit, type AuditItem } from "../src/inventory";
 import * as inv from "../src/inventory-repo";
 
 const item = (patch: Partial<AuditItem> = {}): AuditItem => ({
-  id: crypto.randomUUID(), auditId: "a", position: 1, name: "Paracetamol", presentation: "",
+  id: crypto.randomUUID(), auditId: "a", position: 1, name: "Paracetamol", presentation: "", photo: null,
   expected: 20, counted: 14, merma: 3, ...patch,
 });
 beforeEach(async () => {
@@ -54,4 +54,31 @@ test("un solo inventario activo; al finalizar ya no se puede editar", async () =
   await assert.rejects(inv.saveItem(item({ auditId: first })), /finalizado/);
   await assert.rejects(inv.removeItem(saved[0]!), /finalizado/);
   assert.notEqual(await inv.startAudit(), first);
+});
+test("el registro se separa por día; cada día solo trae su merma y sus faltantes", () => {
+  const audits = [
+    { id: "lunes", date: "2026-11-23", createdAt: 1 } as Audit,
+    { id: "martes", date: "2026-11-24", createdAt: 2 } as Audit,
+  ];
+  const days = logDays(audits, [
+    item({ auditId: "lunes", name: "Merma lunes", counted: 20, merma: 2 }),
+    item({ auditId: "martes", name: "Robado martes", counted: 15, merma: 0 }),
+    item({ auditId: "martes", name: "Cuadra", expected: 3, counted: 3, merma: 0 }),
+  ]);
+  assert.deepEqual(days.map((day) => day.date), ["2026-11-24", "2026-11-23"]);
+  assert.deepEqual(days[0]!.missing.map((row) => row.item.name), ["Robado martes"]);
+  assert.equal(days[0]!.merma.length, 0);
+  assert.deepEqual(days[1]!.merma.map((row) => row.item.name), ["Merma lunes"]);
+  assert.equal(days[1]!.missing.length, 0);
+});
+test("limpiar fotos sin uso conserva las fotos de productos del inventario", async () => {
+  const { cleanPhotos } = await import("../src/drafts");
+  const audit = await inv.startAudit();
+  const database = await db();
+  await database.put("photos", { id: "foto-inv", blob: new Blob(["x"]) });
+  await database.put("photos", { id: "huerfana", blob: new Blob(["x"]) });
+  await inv.saveItem(item({ auditId: audit, photo: "foto-inv" }));
+  await cleanPhotos();
+  assert(await database.get("photos", "foto-inv"));
+  assert.equal(await database.get("photos", "huerfana"), undefined);
 });

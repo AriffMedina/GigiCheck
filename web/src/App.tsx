@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Backdrop } from "./Backdrop";
 import { CountView } from "./CountView";
 import { Editor } from "./Editor";
@@ -12,11 +13,17 @@ import { useWorkspace } from "./useWorkspace";
 export default function App() {
   const app = useWorkspace();
   const { session, draft, rows, page } = app;
+  // Inventory opened from the shared history; null means "the active one".
+  const [auditId, setAuditId] = useState<string | null>(null);
+  const showInventory = (id: string | null) => {
+    setAuditId(id);
+    app.navigate("inventory");
+  };
   let content;
   if (app.loading) content = <p className="muted">Abriendo tus conteos…</p>;
-  else if (page === "inventory") content = <InventoryView />;
+  else if (page === "inventory") content = <InventoryView key={auditId ?? "active"} auditId={auditId} />;
   else if (page === "history")
-    content = <History sessions={app.all} onOpen={app.open} />;
+    content = <History sessions={app.all} onOpen={app.open} onOpenAudit={showInventory} />;
   else if (page === "editor" && draft)
     content = (
       <Editor
@@ -79,7 +86,7 @@ export default function App() {
           </button>
           <button
             className={page === "inventory" ? "active" : ""}
-            onClick={() => app.navigate("inventory")}
+            onClick={() => showInventory(null)}
           >
             <Icon name="box" />
             Inventario

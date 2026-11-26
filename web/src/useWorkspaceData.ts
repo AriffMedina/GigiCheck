@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { countTab, type Draft, type Entry, type Session } from "./domain";
 import * as repo from "./repository";
 import { lastCount, rememberCount } from "./lastCount";
-export type Page = "count" | "history" | "editor" | "finish";
+export type Page = "count" | "history" | "editor" | "finish" | "inventory";
 export function useWorkspaceData() {
   const [all, setAll] = useState<Session[]>([]);
   const [selected, setSelected] = useState<string | null>(null);

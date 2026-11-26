@@ -78,7 +78,7 @@ export function localDate(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-export const dateLabel = (session: Session, full = false) =>
+export const dateLabel = (session: Pick<Session, "date" | "shift">, full = false) =>
   `${Number(session.date.slice(8))} ${MONTHS[Number(session.date.slice(5, 7)) - 1]} · ${full ? session.shift : session.shift.split(" (")[0]}`;
 export const pending = (row: Entry) => row.quantity - row.brought;
 export type BringChange = number | "all" | "none";

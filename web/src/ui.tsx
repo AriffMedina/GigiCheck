@@ -4,7 +4,7 @@ export function Icon({
   name,
   size = 24,
 }: {
-  name: 'camera' | 'home' | 'history' | 'back' | 'spark' | 'check' | 'close' | 'chevron' | 'share';
+  name: 'camera' | 'home' | 'history' | 'back' | 'spark' | 'check' | 'close' | 'chevron' | 'share' | 'box';
   size?: number;
 }) {
   const paths = {
@@ -30,6 +30,7 @@ export function Icon({
     check: <path d="m5 13 4 4 10-10" />,
     close: <path d="M6 6l12 12M18 6 6 18" />,
     chevron: <path d="m6 9 6 6 6-6" />,
+    box: <path d="M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10" />,
     share: <path d="M12 16V4M7 9l5-5 5 5M5 14v6h14v-6" />,
     spark: <path d="M12 2c0 7-3 10-10 10 7 0 10 3 10 10 0-7 3-10 10-10-7 0-10-3-10-10Z" />,
   };
